@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Vật Lí 10 - Chương Động Học (Bài 4 - 12)</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --warning: #ca8a04;
+            --warning-bg: #fef9c3;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 780px;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin: auto;
+            border: 1px solid var(--border);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            padding: 20px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .app-header h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .app-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            padding: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Onboarding */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background-color: #eef2ff;
+        }
+
+        /* Student Info Banner */
+        .student-banner {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Level Cards */
+        .level-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .level-card.unlocked {
+            border-color: #c7d2fe;
+            background: #ffffff;
+        }
+
+        .level-card.locked {
+            background: #f8fafc;
+            opacity: 0.88;
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .level-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-unlocked { background: var(--success-bg); color: var(--success); }
+        .badge-locked { background: #e2e8f0; color: var(--text-muted); }
+        .badge-star { background: var(--warning-bg); color: var(--warning); }
+
+        .level-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .progress-stars {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        /* Teacher Bypass - Minimalist/White as requested */
+        .teacher-bypass-zone {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .bypass-input {
+            width: 58px;
+            height: 22px;
+            font-size: 0.72rem;
+            border: 1px solid #f1f5f9;
+            background: #ffffff;
+            color: #94a3b8;
+            border-radius: 4px;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .bypass-input:focus {
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+
+        .bypass-btn {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .bypass-btn:hover {
+            color: #64748b;
+            border-color: #e2e8f0;
+        }
+
+        /* Quiz Area */
+        .quiz-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .topic-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .question-box {
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #1e293b;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .option-btn {
+            text-align: left;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            font-size: 0.98rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.45;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .option-label {
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 24px;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--danger);
+            background-color: var(--danger-bg);
+            color: #991b1b;
+        }
+
+        .explanation-box {
+            display: none;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+        .explanation-box.show-correct {
+            display: block;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .explanation-box.show-wrong {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .trap-badge {
+            display: inline-block;
+            background: #fef08a;
+            color: #854d0e;
+            font-weight: 700;
+            font-size: 0.78rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+
+        .result-score-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #eef2ff;
+            border: 4px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        . action-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 500px) {
+            .screen { padding: 16px; }
+            .app-header h1 { font-size: 1.15rem; }
+            .action-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="app-header">
+        <h1>⚡ CHINH PHỤC ĐỘNG HỌC VẬT LÍ 10</h1>
+        <p>Bám sát Chủ đề 4 đến Chủ đề 12 (Độ dịch chuyển, Vận tốc, Gia tốc, Rơi tự do, Chuyển động ném)</p>
+        <button class="sound-toggle" id="soundToggleBtn" title="Bật/Tắt âm thanh">🔊</button>
+    </div>
+
+    <!-- MÀN HÌNH 1: ONBOARDING -->
+    <div id="screen-onboarding" class="screen active">
+        <h2 style="margin-bottom: 6px; color: var(--primary);">👋 Chào mừng em đến với phòng luyện tập!</h2>
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 20px;">
+            Hãy điền đầy đủ thông tin cá nhân và mục tiêu trước khi bắt đầu hành trình vượt ải Vật lí nhé.
+        </p>
+
+        <div class="form-group">
+            <label for="inpName">1. Họ và tên học sinh *</label>
+            <input type="text" id="inpName" class="form-control" placeholder="Ví dụ: Nguyễn Văn An">
+        </div>
+
+        <div class="form-group">
+            <label for="inpClass">2. Lớp *</label>
+            <input type="text" id="inpClass" class="form-control" placeholder="Ví dụ: 10A1">
+        </div>
+
+        <div class="form-group">
+            <label for="inpTarget">3. Mục tiêu điểm số môn Vật lí *</label>
+            <input type="number" id="inpTarget" class="form-control" placeholder="Ví dụ: 9.5" min="5" max="10" step="0.1">
+        </div>
+
+        <div class="form-group">
+            <label for="inpDream">4. Ước mơ tương lai của em *</label>
+            <input type="text" id="inpDream" class="form-control" placeholder="Ví dụ: Kỹ sư Hàng không / Bác sĩ / Lập trình viên...">
+        </div>
+
+        <div id="onboardingError" style="color: var(--danger); font-size: 0.9rem; margin-bottom: 12px; display: none;">
+            ⚠️ Vui lòng nhập đầy đủ cả 4 thông tin bắt buộc trước khi bắt đầu!
+        </div>
+
+        <button class="btn" onclick="submitOnboarding()">🚀 Bắt đầu hành trình</button>
+    </div>
+
+    <!-- MÀN HÌNH 2: BẢN ĐỒ CẤP ĐỘ -->
+    <div id="screen-dashboard" class="screen">
+        <div class="student-banner" id="studentBanner"></div>
+
+        <!-- CẤP ĐỘ 1 -->
+        <div class="level-card unlocked" id="card-level-1">
+            <div class="level-header">
+                <span class="level-title">🌱 Cấp độ 1: Nền Tảng Vững Chắc (Bài 4 → 12)</span>
+                <span class="badge badge-unlocked">Đang mở</span>
+            </div>
+            <p class="level-desc">
+                12 câu hỏi Nhận biết & Thông hiểu căn bản: Công thức nền tảng, thí nghiệm đo tốc độ & gia tốc rơi tự do, tính toán 1 bước.
+            </p>
+            <div class="progress-stars" id="lvl1-progress-text">
+                ⭐ Lượt đạt tuyệt đối (12/12): 0 / 3 lượt
+            </div>
+            <button class="btn" onclick="startQuiz(1)">Làm bài Cấp độ 1</button>
+        </div>
+
+        <!-- CẤP ĐỘ 2 -->
+        <div class="level-card locked" id="card-level-2">
+            <div class="level-header">
+                <span class="level-title">🔥 Cấp độ 2: Vận Dụng Thực Tế (Mục tiêu 7 - 8+)</span>
+                <span class="badge badge-locked" id="badge-level-2">🔒 Đang khóa</span>
+            </div>
+            <p class="level-desc">
+                5 câu hỏi Vận dụng các bài toán thực tế (tốc độ trung bình, tàu qua hầm, hãm phanh, rơi tự do, ném ngang). Có 1 câu gài bẫy đơn vị/hướng!
+                <br><em>Yêu cầu mở khóa: Đạt 12/12 ở Cấp độ 1 đủ 3 lượt.</em>
+            </p>
+            <button class="btn" id="btn-level-2" onclick="startQuiz(2)" disabled>Làm bài Cấp độ 2</button>
+            <div class="teacher-bypass-zone">
+                <input type="password" id="bypass-2" class="bypass-input" placeholder="Mã GV" maxlength="6">
+                <button class="bypass-btn" onclick="checkBypass(2)">Mở</button>
+            </div>
+        </div>
+
+        <!-- CẤP ĐỘ 3 -->
+        <div class="level-card locked" id="card-level-3">
+            <div class="level-header">
+                <span class="level-title">👑 Cấp độ 3: Vận Dụng Cao (Chinh phục 9 - 10)</span>
+                <span class="badge badge-locked" id="badge-level-3">🔒 Đang khóa</span>
+            </div>
+            <p class="level-desc">
+                5 bài toán tư duy tổng hợp sâu sắc từ đề gốc (cộng vận tốc ca nô lệch góc, xử lý sai số thực hành, 2 vật chuyển động, giây đầu & giây cuối). Có gài bẫy nâng cao!
+                <br><em>Yêu cầu mở khóa: Hoàn thành đạt yêu cầu (5/5 câu) ở Cấp độ 2.</em>
+            </p>
+            <button class="btn" id="btn-level-3" onclick="startQuiz(3)" disabled>Làm bài Cấp độ 3</button>
+            <div class="teacher-bypass-zone">
+                <input type="password" id="bypass-3" class="bypass-input" placeholder="Mã GV" maxlength="6">
+                <button class="bypass-btn" onclick="checkBypass(3)">Mở</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH 3: LÀM BÀI -->
+    <div id="screen-quiz" class="screen">
+        <div class="quiz-top-bar">
+            <span id="quiz-level-name">Cấp độ 1</span>
+            <span id="quiz-counter">Câu 1/12</span>
+            <span id="quiz-score-live">Đúng: 0</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="quiz-progress-bar"></div>
+        </div>
+
+        <div id="quiz-topic-tag" class="topic-tag">Chủ đề</div>
+        <div id="quiz-question" class="question-box">Nội dung câu hỏi?</div>
+
+        <div id="quiz-options" class="options-list"></div>
+
+        <div id="quiz-explanation" class="explanation-box"></div>
+
+        <div class="action-row">
+            <button class="btn btn-outline" onclick="backToDashboard()" style="flex: 1;">🏠 Về bảng cấp độ</button>
+            <button class="btn" id="btn-next-question" onclick="nextQuestion()" style="flex: 2; display: none;">Câu tiếp theo ➡️</button>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH 4: KẾT QUẢ -->
+    <div id="screen-result" class="screen" style="text-align: center;">
+        <h2 id="result-title" style="margin-bottom: 12px; color: var(--primary);">Kết quả lượt làm bài</h2>
+        <div class="result-score-circle" id="result-circle">
+            12/12
+        </div>
+        <p id="result-message" style="font-size: 1.02rem; margin-bottom: 20px; color: #334155;"></p>
+
+        <div class="action-row">
+            <button class="btn btn-outline" onclick="backToDashboard()">📋 Bảng cấp độ</button>
+            <button class="btn" id="btn-retry" onclick="retryCurrentLevel()">🔄 Làm lại lượt mới (Đảo câu hỏi)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================== HỆ THỐNG ÂM THANH WEB AUDIO API THUẦN ==================
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    document.getElementById('soundToggleBtn').addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        initAudio();
+        const now = audioCtx.currentTime;
+
+        if (type === 'correct') {
+            // Âm thanh vui nhộn Arpeggio khi chọn Đúng
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.065);
+                gain.gain.setValueAtTime(0.18, now + idx * 0.065);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.065 + 0.22);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.065);
+                osc.stop(now + idx * 0.065 + 0.23);
+            });
+        } else if (type === 'wrong') {
+            // Âm thanh bất ngờ trượt xuống khi chọn Sai
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.linearRampToValueAtTime(130, now + 0.35);
+            gain.gain.setValueAtTime(0.16, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else if (type === 'unlock') {
+            // Âm thanh chiến thắng mở khóa cấp độ
+            const fanfare = [440, 554.37, 659.25, 880];
+            fanfare.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+                gain.gain.setValueAtTime(0.22, now + idx * 0.09);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.09);
+                osc.stop(now + idx * 0.09 + 0.36);
+            });
+        }
+    }
+
+    // ================== NGÂN HÀNG CÂU HỎI BÁM SÁT BÀI 4 -> BÀI 12 ==================
+    const QUESTION_BANK = {
+        // CẤP ĐỘ 1: 12 Câu Nhận biết & Thông hiểu căn bản (Trải đều từ Bài 4 đến Bài 12)
+        1: [
+            {
+                topic: "Bài 4: Độ dịch chuyển và quãng đường",
+                q: "Khi một vật chuyển động thẳng và không đổi chiều thì mối liên hệ giữa quãng đường đi được (s) và độ lớn độ dịch chuyển (d) là:",
+                options: [
+                    "Độ lớn độ dịch chuyển bằng quãng đường đi được (d = s).",
+                    "Độ lớn độ dịch chuyển luôn lớn hơn quãng đường đi được (d > s).",
+                    "Độ lớn độ dịch chuyển luôn bằng 0.",
+                    "Quãng đường đi được có thể nhận giá trị âm, còn độ dịch chuyển luôn dương."
+                ],
+                answer: 0,
+                explain: "Khi vật chuyển động thẳng và không đổi chiều, quãng đường đi được và độ dịch chuyển có độ lớn bằng nhau (d = s)."
+            },
+            {
+                topic: "Bài 4: Độ dịch chuyển và quãng đường",
+                q: "Một người đi từ nhà đến cửa hàng tạp hóa cách nhà 300 m, sau đó đi tiếp đến công viên cách cửa hàng tạp hóa 200 m rồi quay trở về nhà. Độ dịch chuyển tổng hợp của người này trong cả chuyến đi là:",
+                options: [
+                    "0 m.",
+                    "1000 m.",
+                    "500 m.",
+                    "600 m."
+                ],
+                answer: 0,
+                explain: "Vì vị trí cuối cùng trùng với vị trí xuất phát (trở về nhà) nên độ dịch chuyển của người đó bằng 0 m."
+            },
+            {
+                topic: "Bài 5: Tốc độ và vận tốc",
+                q: "Đồng hồ đo tốc độ (tốc kế) đặt trước mặt người lái xe máy hoặc ô tô hiển thị giá trị nào dưới đây khi xe đang chạy?",
+                options: [
+                    "Tốc độ tức thời của xe tại thời điểm đó.",
+                    "Tốc độ trung bình của xe trên cả hành trình.",
+                    "Vận tốc trung bình của xe.",
+                    "Độ dịch chuyển của xe trong 1 giờ."
+                ],
+                answer: 0,
+                explain: "Tốc kế trên xe máy, ô tô chỉ tốc độ tức thời (độ nhanh chậm tại đúng thời điểm người lái quan sát)."
+            },
+            {
+                topic: "Bài 5: Tốc độ và vận tốc (Cộng vận tốc)",
+                q: "Một chiếc thuyền chuyển động ngược dòng với tốc độ 14 km/h so với mặt nước, nước chảy với tốc độ 9 km/h so với bờ. Độ lớn vận tốc của thuyền so với bờ là:",
+                options: [
+                    "5 km/h.",
+                    "23 km/h.",
+                    "14 km/h.",
+                    "9 km/h."
+                ],
+                answer: 0,
+                explain: "Khi thuyền chạy ngược dòng nước: v_thuyền/bờ = |v_thuyền/nước - v_nước/bờ| = 14 - 9 = 5 km/h."
+            },
+            {
+                topic: "Bài 6: Thực hành đo tốc độ của vật",
+                q: "Trong thực hành đo tốc độ của viên bi thép bằng đồng hồ đo thời gian hiện số và cổng quang điện, để đo tốc độ tức thời của viên bi tại một cổng quang điện, ta cần đặt nút MODE ở chế độ nào và dùng thêm dụng cụ gì?",
+                options: [
+                    "Đặt MODE ở A (hoặc B) và dùng thước kẹp đo đường kính viên bi.",
+                    "Đặt MODE ở A ↔ B và dùng cân điện tử đo khối lượng viên bi.",
+                    "Đặt MODE ở A ↔ B và dùng thước thẳng đo khoảng cách hai cổng.",
+                    "Đặt MODE ở A + B và dùng nhiệt kế đo nhiệt độ phòng."
+                ],
+                answer: 0,
+                explain: "Để đo tốc độ tức thời v = d/t, ta đo đường kính d của viên bi bằng thước kẹp và đặt đồng hồ ở MODE A hoặc B để đo thời gian chắn cổng quang điện."
+            },
+            {
+                topic: "Bài 7: Đồ thị độ dịch chuyển - thời gian (d - t)",
+                q: "Trong đồ thị độ dịch chuyển – thời gian (d – t) của một chuyển động thẳng đều, nếu một đoạn đồ thị là đường thẳng nằm ngang (song song với trục thời gian Ot) thì điều đó có ý nghĩa gì?",
+                options: [
+                    "Vật đang đứng yên.",
+                    "Vật đang chuyển động thẳng đều với vận tốc lớn.",
+                    "Vật đang chuyển động nhanh dần đều.",
+                    "Vật đang đổi chiều chuyển động liên tục."
+                ],
+                answer: 0,
+                explain: "Đường thẳng nằm ngang trên đồ thị (d - t) có độ dốc bằng 0 (độ dịch chuyển d không đổi theo thời gian), nghĩa là vật đang đứng yên."
+            },
+            {
+                topic: "Bài 8: Chuyển động biến đổi – Gia tốc",
+                q: "Một vật chuyển động thẳng trên trục Ox có vận tốc tức thời v và gia tốc a. Khi vật chuyển động thẳng chậm dần đều thì khẳng định nào sau đây là luôn đúng?",
+                options: [
+                    "Vectơ gia tốc ngược chiều với vectơ vận tốc (tích a.v < 0).",
+                    "Gia tốc a luôn mang giá trị âm (a < 0) trong mọi hệ quy chiếu.",
+                    "Gia tốc a và vận tốc v luôn cùng dấu (a.v > 0).",
+                    "Gia tốc của vật giảm đều theo thời gian."
+                ],
+                answer: 0,
+                explain: "Trong chuyển động thẳng chậm dần đều, vectơ gia tốc luôn ngược chiều với vectơ vận tốc nên tích số a.v < 0."
+            },
+            {
+                topic: "Bài 8 & 9: Chuyển động thẳng biến đổi đều",
+                q: "Một đoàn tàu đang chạy với vận tốc 20 m/s thì hãm phanh chuyển động thẳng chậm dần đều. Sau 10 s vận tốc của tàu giảm còn 15 m/s. Chọn chiều dương là chiều chuyển động của tàu. Gia tốc của tàu là:",
+                options: [
+                    "-0,5 m/s².",
+                    "0,5 m/s².",
+                    "-2,0 m/s².",
+                    "1,5 m/s²."
+                ],
+                answer: 0,
+                explain: "Áp dụng công thức gia tốc: a = (v - v₀)/Δt = (15 - 20)/10 = -0,5 m/s²."
+            },
+            {
+                topic: "Bài 9: Chuyển động thẳng biến đổi đều",
+                q: "Gọi v₀ là vận tốc ban đầu, v là vận tốc tức thời, a là gia tốc và d là độ dịch chuyển. Hệ thức liên hệ độc lập với thời gian trong chuyển động thẳng biến đổi đều là:",
+                options: [
+                    "v² - v₀² = 2ad",
+                    "v² + v₀² = 2ad",
+                    "v - v₀ = 2ad",
+                    "v² - v₀² = ad"
+                ],
+                answer: 0,
+                explain: "Từ v = v₀ + at và d = v₀t + ½at², khử t ta thu được công thức độc lập với thời gian: v² - v₀² = 2ad."
+            },
+            {
+                topic: "Bài 10: Sự rơi tự do",
+                q: "Một vật được thả rơi tự do không vận tốc đầu từ độ cao h = 80 m xuống đất tại nơi có gia tốc rơi tự do g = 10 m/s². Thời gian từ lúc thả đến khi vật chạm đất là:",
+                options: [
+                    "4 s.",
+                    "8 s.",
+                    "2 s.",
+                    "16 s."
+                ],
+                answer: 0,
+                explain: "Áp dụng công thức thời gian rơi tự do: t = √(2h/g) = √(2 × 80 / 10) = √16 = 4 s."
+            },
+            {
+                topic: "Bài 11: Thực hành đo gia tốc rơi tự do",
+                q: "Trong bài thực hành đo gia tốc rơi tự do bằng trụ thép rơi qua cổng quang điện, nếu đo được quãng đường rơi S và thời gian rơi t thì gia tốc rơi tự do g được tính theo công thức nào?",
+                options: [
+                    "g = 2S / t²",
+                    "g = S / (2t²)",
+                    "g = 2S / t",
+                    "g = S² / (2t)"
+                ],
+                answer: 0,
+                explain: "Vì trụ thép rơi tự do không vận tốc đầu: S = ½gt² ⇒ g = 2S / t²."
+            },
+            {
+                topic: "Bài 12: Chuyển động ném",
+                q: "Một vật được ném ngang từ độ cao h = 20 m với vận tốc ban đầu v₀ = 15 m/s. Lấy g = 10 m/s² và bỏ qua sức cản không khí. Tầm bay xa L của vật theo phương ngang là:",
+                options: [
+                    "30 m.",
+                    "15 m.",
+                    "45 m.",
+                    "60 m."
+                ],
+                answer: 0,
+                explain: "Thời gian vật rơi chạm đất: t = √(2h/g) = √(2×20/10) = 2 s. Tầm bay xa của vật: L = v₀.t = 15 × 2 = 30 m."
+            }
+        ],
+
+        // CẤP ĐỘ 2: 5 Câu Vận dụng thực tế (Mục tiêu 7 - 8+, có 1 câu gài bẫy tinh tế)
+        2: [
+            {
+                topic: "Bài 5: Vận tốc & Tốc độ trung bình (⚠️ Câu hỏi có bẫy!)",
+                isTrap: true,
+                q: "Một ô tô chạy thẳng từ địa điểm A đến địa điểm B với tốc độ không đổi 40 km/h, sau đó quay đầu chạy thẳng từ B trở về A với tốc độ không đổi 60 km/h. Tốc độ trung bình và vận tốc trung bình của ô tô trên cả lộ trình (đi và về) lần lượt là:",
+                options: [
+                    "Tốc độ trung bình = 48 km/h; Vận tốc trung bình = 0 km/h.",
+                    "Tốc độ trung bình = 50 km/h; Vận tốc trung bình = 0 km/h.",
+                    "Tốc độ trung bình = 48 km/h; Vận tốc trung bình = 48 km/h.",
+                    "Tốc độ trung bình = 50 km/h; Vận tốc trung bình = 50 km/h."
+                ],
+                answer: 0,
+                explain: "💡 BẪY THƯỜNG GẶP: Nhiều học sinh lấy trung bình cộng (40+60)/2 = 50 km/h là SAI! Ta phải tính theo tổng quãng đường chia tổng thời gian: v_tb = 2AB / (AB/40 + AB/60) = 2 / (1/40 + 1/60) = 48 km/h. Còn độ dịch chuyển cả đi lẫn về d = 0 nên vận tốc trung bình bằng 0!"
+            },
+            {
+                topic: "Bài 5: Công thức cộng vận tốc thực tế",
+                isTrap: false,
+                q: "Một hành khách ngồi trên toa tàu lửa số 1 đang chạy với tốc độ 15 m/s quan sát qua cửa sổ thấy đoàn tàu số 2 chạy cùng chiều trên đường sắt bên cạnh (tàu 1 chạy nhanh hơn tàu 2). Từ lúc nhìn thấy điểm cuối đến lúc nhìn thấy điểm đầu của đoàn tàu số 2 mất 8 s. Biết đoàn tàu số 2 gồm 20 toa, mỗi toa dài 4 m. Tốc độ của đoàn tàu số 2 so với mặt đất là:",
+                options: [
+                    "5 m/s.",
+                    "10 m/s.",
+                    "7 m/s.",
+                    "12 m/s."
+                ],
+                answer: 0,
+                explain: "Chiều dài đoàn tàu 2 là L = 20 × 4 = 80 m. Tốc độ tương đối của tàu 1 so với tàu 2 là: v₁₂ = L / t = 80 / 8 = 10 m/s. Vì hai tàu chạy cùng chiều và tàu 1 nhanh hơn nên v₁₂ = v₁ - v₂ ⇒ v₂ = 15 - 10 = 5 m/s."
+            },
+            {
+                topic: "Bài 8 & 9: Chuyển động thẳng biến đổi đều",
+                isTrap: false,
+                q: "Một tàu hỏa đang chuyển động thẳng với tốc độ 60 km/h thì hãm phanh chuyển động chậm dần đều. Sau khi đi thêm được 450 m thì tốc độ của tàu chỉ còn 15 km/h. Quãng đường tàu còn đi thêm được kể từ lúc đạt 15 km/h cho đến khi dừng hẳn là:",
+                options: [
+                    "30 m.",
+                    "45 m.",
+                    "15 m.",
+                    "60 m."
+                ],
+                answer: 0,
+                explain: "Ta có v₁ = 15 km/h = ¼ v₀ (với v₀ = 60 km/h). Áp dụng v² - v₀² = 2as: Giai đoạn 1: v₁² - v₀² = -15/16 v₀² = 2a(450). Giai đoạn 2 (từ v₁ đến 0): 0² - v₁² = -1/16 v₀² = 2a.s₂. Lập tỉ số suy ra s₂ = 450 / 15 = 30 m."
+            },
+            {
+                topic: "Bài 10: Sự rơi tự do (Quãng đường trong n giây cuối)",
+                isTrap: false,
+                q: "Một vật được thả rơi tự do không vận tốc đầu từ độ cao h. Trong 2 giây cuối cùng trước khi chạm đất, vật rơi được quãng đường 60 m. Lấy g = 10 m/s². Thời gian rơi toàn bộ và độ cao h lúc thả vật lần lượt là:",
+                options: [
+                    "4 s và 80 m.",
+                    "5 s và 125 m.",
+                    "3 s và 45 m.",
+                    "6 s và 180 m."
+                ],
+                answer: 0,
+                explain: "Quãng đường rơi trong t giây là ½gt² = 5t². Quãng đường trong (t - 2) giây đầu là 5(t - 2)². Trong 2s cuối: Δs = 5t² - 5(t - 2)² = 20t - 20 = 60 ⇒ t = 4 s. Độ cao h = 5 × 4² = 80 m."
+            },
+            {
+                topic: "Bài 12: Chuyển động ném ngang & ném xiên",
+                isTrap: false,
+                q: "Một vật được ném theo phương ngang ở độ cao 25 m với vận tốc đầu v₀ = 20 m/s. Bỏ qua sức cản của không khí, lấy g = 10 m/s². Vận tốc của vật ngay trước lúc chạm đất có độ lớn là:",
+                options: [
+                    "30 m/s.",
+                    "25 m/s.",
+                    "44,7 m/s.",
+                    "50 m/s."
+                ],
+                answer: 0,
+                explain: "Áp dụng công thức vận tốc khi chạm đất của vật ném ngang: v = √(v₀² + 2gh) = √(20² + 2 × 10 × 25) = √(400 + 500) = √900 = 30 m/s."
+            }
+        ],
+
+        // CẤP ĐỘ 3: 5 Câu Vận dụng cao (Mục tiêu 9 - 10, có 1 câu gài bẫy nâng cao)
+        3: [
+            {
+                topic: "Bài 5: Tổng hợp vận tốc nâng cao (Bài toán Ca nô qua sông)",
+                isTrap: false,
+                q: "Một ca nô chạy qua sông xuất phát từ A, mũi hướng tới điểm B ở bờ bên kia (AB vuông góc với bờ sông). Do nước chảy nên khi đến bờ bên kia tại C, ca nô cách B một đoạn BC = 240 m sau thời gian 120 s. Nếu người lái giữ cho mũi ca nô chếch 60° so với bờ sông (ngược dòng) và mở máy chạy như trước thì ca nô tới đúng điểm B. Bề rộng AB của dòng sông là:",
+                options: [
+                    "480 m.",
+                    "276 m.",
+                    "240 m.",
+                    "360 m."
+                ],
+                answer: 0,
+                explain: "Lần 1: Tốc độ dòng nước v_n = BC / t = 240 / 120 = 2 m/s. Lần 2: Để ca nô đi thẳng theo AB, thành phần vận tốc ca nô dọc bờ phải triệt tiêu vận tốc nước: v_c.cos60° = v_n ⇒ v_c = 2 / 0,5 = 4 m/s. Quay lại lần 1: Bề rộng sông AB = v_c × t = 4 × 120 = 480 m."
+            },
+            {
+                topic: "Bài 6 & 11: Xử lý sai số thực hành đo gia tốc rơi tự do (⚠️ Có bẫy hệ số!)",
+                isTrap: true,
+                q: "Thả rơi tự do một vật từ đỉnh tháp thì thời gian vật chạm đất đo được là t = (2,0 ± 0,1) s. Biết tại nơi thả vật có gia tốc rơi tự do chính xác là g = 9,8 m/s² (bỏ qua sai số của g) và chiều cao tháp tính theo h = ½gt². Kết quả đo chiều cao của tháp được viết đúng là:",
+                options: [
+                    "h = (19,6 ± 2,0) m.",
+                    "h = (19,6 ± 1,0) m.",
+                    "h = (19,6 ± 0,1) m.",
+                    "h = (9,8 ± 2,0) m."
+                ],
+                answer: 0,
+                explain: "💡 BẪY NÂNG CAO: Vì h = ½gt² có t mũ 2 nên sai số tỉ đối của h phải nhân 2: δh = 2.(Δt / t̄) = 2 × (0,1 / 2,0) = 0,1 (tức 10%). Giá trị trung bình h̄ = ½ × 9,8 × 2,0² = 19,6 m. Sai số tuyệt đối Δh = h̄ × δh = 19,6 × 0,1 = 1,96 m ≈ 2,0 m. (Nhiều bạn quên nhân 2 nên chọn ±1,0 m là sai!)."
+            },
+            {
+                topic: "Bài 9: Chuyển động thẳng biến đổi đều (Giây đầu & giây cuối)",
+                isTrap: false,
+                q: "Một xe đang chuyển động thẳng thì hãm phanh chuyển động chậm dần đều cho đến khi dừng lại. Quãng đường xe đi được trong giây đầu tiên sau khi hãm phanh gấp 19 lần quãng đường xe đi được trong giây cuối cùng. Tổng quãng đường đi được trong giây đầu tiên và trong giây cuối cùng là 20 m. Quãng đường xe đi được từ lúc hãm phanh đến lúc dừng hẳn là:",
+                options: [
+                    "100 m.",
+                    "150 m.",
+                    "80 m.",
+                    "200 m."
+                ],
+                answer: 0,
+                explain: "Từ s_1đ + s_1c = 20 m và s_1đ = 19.s_1c ⇒ s_1đ = 19 m; s_1c = 1 m. Quãng đường giây cuối (ngược với giây đầu rơi tự do): s_1c = ½|a|.1² = 1 m ⇒ |a| = 2 m/s². Trong giây đầu: s_1đ = v₀.1 - ½|a|.1² = 19 ⇒ v₀ - 1 = 19 ⇒ v₀ = 20 m/s. Tổng quãng đường: S = v₀²/(2|a|) = 20² / (2×2) = 100 m."
+            },
+            {
+                topic: "Bài 9: Bài toán khoảng cách an toàn 2 đoàn tàu",
+                isTrap: false,
+                q: "Một tàu chở khách đang chạy trên đường ray với tốc độ 25 m/s thì phát hiện một tàu chở hàng cách mình 200 m về phía trước trên cùng một đường ray. Biết tàu chở hàng đang chạy cùng chiều với tốc độ không đổi 15 m/s. Tàu chở khách phải hãm phanh chậm dần đều với độ lớn gia tốc tối thiểu bằng bao nhiêu để hai tàu không va chạm?",
+                options: [
+                    "0,25 m/s².",
+                    "0,50 m/s².",
+                    "1,56 m/s².",
+                    "0,15 m/s²."
+                ],
+                answer: 0,
+                explain: "Xét trong hệ quy chiếu gắn với tàu chở hàng: Vận tốc ban đầu tương đối của tàu khách so với tàu hàng là v₀_tđ = 25 - 15 = 10 m/s. Để không đâm nhau, vận tốc tương đối phải giảm về 0 trong quãng đường tối đa s = 200 m: 0² - 10² = 2.a.200 ⇒ a = -0,25 m/s² ⇒ |a|_min = 0,25 m/s²."
+            },
+            {
+                topic: "Bài 12: Chuyển động ném xiên ở độ cao cực đại",
+                isTrap: false,
+                q: "Một vật được ném lên từ mặt đất theo phương xiên góc α so với phương ngang. Tại điểm cao nhất của quỹ đạo, vật có tốc độ bằng một nửa tốc độ ban đầu v₀ và đạt độ cao cực đại H = 15 m. Lấy g = 10 m/s², bỏ qua sức cản không khí. Tốc độ ban đầu v₀ và góc ném α lần lượt là:",
+                options: [
+                    "v₀ = 20 m/s và α = 60°.",
+                    "v₀ = 20 m/s và α = 30°.",
+                    "v₀ = 30 m/s và α = 60°.",
+                    "v₀ = 15 m/s và α = 45°."
+                ],
+                answer: 0,
+                explain: "Tại đỉnh cao nhất, vy = 0 nên v_đỉnh = vx = v₀.cosα. Theo đề: v₀.cosα = ½v₀ ⇒ cosα = 0,5 ⇒ α = 60°. Mặt khác, độ cao cực đại H = (v₀².sin²60°) / (2g) = 15 ⇒ v₀² × (3/4) / 20 = 15 ⇒ v₀² = 400 ⇒ v₀ = 20 m/s."
+            }
+        ]
+    };
+
+    // ================== BIẾN TRẠNG THÁI ỨNG DỤNG ==================
+    let studentInfo = {
+        name: "",
+        className: "",
+        target: "",
+        dream: ""
+    };
+
+    let progressState = {
+        lvl1PerfectCount: 0, // Cần 3 lần đạt 12/12 để mở Cấp 2
+        lvl2Unlocked: false,
+        lvl3Unlocked: false
+    };
+
+    let currentLevel = 1;
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let currentScore = 0;
+
+    // ================== HÀM TIỆN ÍCH TRỘN NGẪU NHIÊN (FISHER-YATES) ==================
+    function shuffleArray(arr) {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ================== XỬ LÝ ONBOARDING ==================
+    function submitOnboarding() {
+        const name = document.getElementById('inpName').value.trim();
+        const className = document.getElementById('inpClass').value.trim();
+        const target = document.getElementById('inpTarget').value.trim();
+        const dream = document.getElementById('inpDream').value.trim();
+        const errBox = document.getElementById('onboardingError');
+
+        if (!name || !className || !target || !dream) {
+            errBox.style.display = 'block';
+            playSound('wrong');
+            return;
+        }
+
+        errBox.style.display = 'none';
+        studentInfo = { name, className, target, dream };
+        playSound('correct');
+        updateDashboardUI();
+        showScreen('screen-dashboard');
+    }
+
+    // ================== CẬP NHẬT BẢNG CẤP ĐỘ ==================
+    function updateDashboardUI() {
+        document.getElementById('studentBanner').innerHTML = `
+            <div>👤 <strong>${studentInfo.name}</strong> (${studentInfo.className})</div>
+            <div>🎯 Mục tiêu: <strong>${studentInfo.target} điểm</strong> | 🌟 Ước mơ: <strong>${studentInfo.dream}</strong></div>
+        `;
+
+        // Tiến độ Cấp 1
+        const stars = '⭐'.repeat(Math.min(progressState.lvl1PerfectCount, 3)) + '☆'.repeat(Math.max(0, 3 - progressState.lvl1PerfectCount));
+        document.getElementById('lvl1-progress-text').innerHTML = `
+            <span>Lượt đạt tuyệt đối (12/12): <strong>${progressState.lvl1PerfectCount} / 3</strong> (${stars})</span>
+        `;
+
+        // Trạng thái Cấp 2
+        const card2 = document.getElementById('card-level-2');
+        const badge2 = document.getElementById('badge-level-2');
+        const btn2 = document.getElementById('btn-level-2');
+        if (progressState.lvl2Unlocked) {
+            card2.classList.remove('locked');
+            card2.classList.add('unlocked');
+            badge2.className = 'badge badge-unlocked';
+            badge2.textContent = 'Đã mở khóa';
+            btn2.disabled = false;
+        }
+
+        // Trạng thái Cấp 3
+        const card3 = document.getElementById('card-level-3');
+        const badge3 = document.getElementById('badge-level-3');
+        const btn3 = document.getElementById('btn-level-3');
+        if (progressState.lvl3Unlocked) {
+            card3.classList.remove('locked');
+            card3.classList.add('unlocked');
+            badge3.className = 'badge badge-unlocked';
+            badge3.textContent = 'Đã mở khóa';
+            btn3.disabled = false;
+        }
+    }
+
+    // ================== CHẾ ĐỘ GIÁO VIÊN (BYPASS CODE 1819) ==================
+    function checkBypass(level) {
+        const inp = document.getElementById(`bypass-${level}`);
+        if (inp.value.trim() === '1819') {
+            if (level === 2) progressState.lvl2Unlocked = true;
+            if (level === 3) progressState.lvl3Unlocked = true;
+            inp.value = '';
+            playSound('unlock');
+            updateDashboardUI();
+        } else {
+            inp.value = '';
+            playSound('wrong');
+        }
+    }
+
+    // ================== BẮT ĐẦU LÀM BÀI (TRỘN CÂU HỎI & ĐÁP ÁN) ==================
+    function startQuiz(level) {
+        currentLevel = level;
+        currentScore = 0;
+        currentQuestionIndex = 0;
+
+        // Sao chép và trộn thứ tự câu hỏi
+        const rawList = QUESTION_BANK[level];
+        currentQuestions = shuffleArray(rawList).map(item => {
+            // Tạo mảng đối tượng đáp án kèm đánh dấu đáp án đúng
+            const optionObjects = item.options.map((text, idx) => ({
+                text: text,
+                isCorrect: idx === item.answer
+            }));
+            // Trộn ngẫu nhiên 4 phương án A, B, C, D
+            const shuffledOptions = shuffleArray(optionObjects);
+            return {
+                topic: item.topic,
+                q: item.q,
+                isTrap: item.isTrap || false,
+                options: shuffledOptions,
+                explain: item.explain
+            };
+        });
+
+        const levelNames = {
+            1: "🌱 Cấp độ 1: Nền tảng (12 câu)",
+            2: "🔥 Cấp độ 2: Vận dụng 7-8+ (5 câu)",
+            3: "👑 Cấp độ 3: Vận dụng cao 9-10 (5 câu)"
+        };
+        document.getElementById('quiz-level-name').textContent = levelNames[level];
+
+        renderQuestion();
+        showScreen('screen-quiz');
+    }
+
+    function renderQuestion() {
+        const qData = currentQuestions[currentQuestionIndex];
+        const total = currentQuestions.length;
+
+        document.getElementById('quiz-counter').textContent = `Câu ${currentQuestionIndex + 1}/${total}`;
+        document.getElementById('quiz-score-live').textContent = `Đúng: ${currentScore}/${total}`;
+        document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIndex) / total) * 100}%`;
+
+        document.getElementById('quiz-topic-tag').textContent = qData.topic;
+        document.getElementById('quiz-question').textContent = `Câu ${currentQuestionIndex + 1}: ${qData.q}`;
+
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = '';
+        const labels = ['A', 'B', 'C', 'D'];
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="option-label">${labels[idx]}.</span> <span>${opt.text}</span>`;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+
+        const expBox = document.getElementById('quiz-explanation');
+        expBox.className = 'explanation-box';
+        expBox.innerHTML = '';
+
+        document.getElementById('btn-next-question').style.display = 'none';
+    }
+
+    // ================== PHẢN HỒI TỨC THÌ NGAY KHI BẤM CHỌN ==================
+    function selectOption(selectedIndex, clickedBtn) {
+        const qData = currentQuestions[currentQuestionIndex];
+        const allBtns = document.querySelectorAll('#quiz-options .option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        const chosen = qData.options[selectedIndex];
+        const expBox = document.getElementById('quiz-explanation');
+
+        if (chosen.isCorrect) {
+            currentScore++;
+            clickedBtn.classList.add('correct');
+            playSound('correct');
+            expBox.className = 'explanation-box show-correct';
+            expBox.innerHTML = `
+                ${qData.isTrap ? '<div class="trap-badge">👏 Xuất sắc! Em đã vượt qua câu hỏi gài bẫy!</div><br>' : ''}
+                <strong>✅ Chính xác!</strong> ${qData.explain}
+            `;
+        } else {
+            clickedBtn.classList.add('wrong');
+            // Tô xanh đáp án đúng
+            qData.options.forEach((opt, i) => {
+                if (opt.isCorrect) allBtns[i].classList.add('correct');
+            });
+            playSound('wrong');
+            expBox.className = 'explanation-box show-wrong';
+            expBox.innerHTML = `
+                ${qData.isTrap ? '<div class="trap-badge">⚠️ Cẩn thận! Đây là câu hỏi có gài bẫy!</div><br>' : ''}
+                <strong>❌ Chưa chính xác!</strong> ${qData.explain}
+            `;
+        }
+
+        document.getElementById('quiz-score-live').textContent = `Đúng: ${currentScore}/${currentQuestions.length}`;
+        document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`;
+
+        const nextBtn = document.getElementById('btn-next-question');
+        nextBtn.style.display = 'inline-flex';
+        nextBtn.textContent = (currentQuestionIndex === currentQuestions.length - 1) ? '🏁 Xem kết quả lượt này' : 'Câu tiếp theo ➡️';
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < currentQuestions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    // ================== KẾT THÚC LƯỢT LÀM & MỞ KHÓA CẤP ĐỘ ==================
+    function finishQuiz() {
+        const total = currentQuestions.length;
+        const isPerfect = (currentScore === total);
+
+        document.getElementById('result-circle').textContent = `${currentScore}/${total}`;
+        const titleEl = document.getElementById('result-title');
+        const msgEl = document.getElementById('result-message');
+
+        if (currentLevel === 1) {
+            if (isPerfect) {
+                progressState.lvl1PerfectCount++;
+                if (progressState.lvl1PerfectCount >= 3 && !progressState.lvl2Unlocked) {
+                    progressState.lvl2Unlocked = true;
+                    playSound('unlock');
+                    titleEl.textContent = "🎉 CHÚC MỪNG MỞ KHÓA CẤP ĐỘ 2!";
+                    msgEl.innerHTML = `Tuyệt vời <strong>${studentInfo.name}</strong>! Em đã tích lũy đủ <strong>3/3 lượt đạt 12/12</strong> ở Cấp độ 1 và chính thức mở khóa <strong>Cấp độ 2 (Vận dụng 7-8+)</strong>!`;
+                } else {
+                    playSound('correct');
+                    titleEl.textContent = "🌟 ĐẠT ĐIỂM TUYỆT ĐỐI 12/12!";
+                    const remain = Math.max(0, 3 - progressState.lvl1PerfectCount);
+                    msgEl.innerHTML = remain > 0
+                        ? `Quá giỏi! Em đã có <strong>${progressState.lvl1PerfectCount}/3 lượt</strong> đạt 12/12. Hãy làm thêm <strong>${remain} lượt 12/12</strong> nữa để mở khóa Cấp độ 2 nhé!`
+                        : `Em đã hoàn thành xuất sắc Cấp độ 1 (${progressState.lvl1PerfectCount} lượt 12/12). Hãy tiến lên Cấp độ 2 nào!`;
+                }
+            } else {
+                titleEl.textContent = "💪 Cố gắng thêm chút nữa nhé!";
+                msgEl.innerHTML = `Em đạt <strong>${currentScore}/12 câu</strong>. Để tích lũy lượt mở khóa Cấp độ 2, em cần đạt tuyệt đối <strong>12/12 câu</strong>. Hãy bấm làm lại để rèn phản xạ công thức nhé! (Hiện tại: ${progressState.lvl1PerfectCount}/3 lượt).`;
+            }
+        } else if (currentLevel === 2) {
+            if (isPerfect) {
+                const firstTimeUnlock3 = !progressState.lvl3Unlocked;
+                progressState.lvl3Unlocked = true;
+                playSound('unlock');
+                titleEl.textContent = firstTimeUnlock3 ? "🔥 MỞ KHÓA CẤP ĐỘ 3 (9 - 10 ĐIỂM)!" : "🏆 XUẤT SẮC VƯỢT QUA CẤP ĐỘ 2!";
+                msgEl.innerHTML = `Chúc mừng <strong>${studentInfo.name}</strong>! Em đã vượt qua toàn bộ 5/5 câu hỏi Vận dụng và bẫy ở Cấp độ 2. <strong>Cấp độ 3 (Vận dụng cao)</strong> đã sẵn sàng chờ em chinh phục!`;
+            } else {
+                titleEl.textContent = "⚡ Sắp vượt ải Cấp độ 2 rồi!";
+                msgEl.innerHTML = `Em đạt <strong>${currentScore}/5 câu</strong>. Hãy đọc kỹ lời giải thích các câu sai và thử lại để đạt 5/5 và mở khóa Cấp độ 3 nhé!`;
+            }
+        } else if (currentLevel === 3) {
+            if (isPerfect) {
+                playSound('unlock');
+                titleEl.textContent = "👑 ĐỈNH CAO ĐỘNG HỌC VẬT LÍ 10!";
+                msgEl.innerHTML = `Chúc mừng <strong>${studentInfo.name}</strong> (${studentInfo.className})! Em đã chinh phục tuyệt đối 5/5 câu Vận dụng cao. Mục tiêu <strong>${studentInfo.target} điểm</strong> và ước mơ trở thành <strong>${studentInfo.dream}</strong> chắc chắn nằm trong tầm tay em!`;
+            } else {
+                titleEl.textContent = "🔥 Rèn bản lĩnh 9 - 10 điểm!";
+                msgEl.innerHTML = `Em đạt <strong>${currentScore}/5 câu</strong> ở Cấp độ Vận dụng cao. Hãy xem kỹ phương pháp giải vừa hiển thị và thử sức lại để đạt 5/5 nhé!`;
+            }
+        }
+
+        updateDashboardUI();
+        showScreen('screen-result');
+    }
+
+    function retryCurrentLevel() {
+        startQuiz(currentLevel);
+    }
+
+    function backToDashboard() {
+        updateDashboardUI();
+        showScreen('screen-dashboard');
+    }
+</script>
+
+</body>
+</html>
